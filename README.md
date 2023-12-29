@@ -1,7 +1,19 @@
-# asc-perceptron
-Implementing Logistic Regression for Classification
+# asc-data-preprocessing
 
-In this assignment, you will be implementing and training a logistic regression model for classification. You will be using Python to build the logistic regression model from scratch and then train it to classify different penguin species. This task will provide you with a deeper understanding of machine learning algorithms for classification and their efficient implementation in Python.
+In this assignments, we will learn the basic of data preprocessing for machine learning applications. Specifically, we will learn:
+
+- Loading data with explicit Data typing
+- Dealing with missing data
+- Handing categorical data
+    - class labels
+    - ordinal data
+    - nominal data: one-hot encoding
+- Feature selection
+    - Lasso
+    - Sequential backward selection
+- Feature importance
+    - Regression coefficient
+    - SHAP
 
 
 # Task

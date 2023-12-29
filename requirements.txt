@@ -9,3 +9,4 @@ black
 nbconvert
 requests
 jupytext
+shap

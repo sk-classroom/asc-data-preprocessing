@@ -1,65 +1,47 @@
 # %%
 # In this expercise, you will:
-# 3. learn how to use the LogisticRegression class from the scikit-learn library.
-# 4. learn how to evaluate the performance of the model using different metrics.
-# 4. learn how to use the plot_decision_regions function from the utils.py module.
+# 1. learn loading data with explicit Data typing
+# 2. learn how to deal with missing data
+# 3. learn how to deal with categorical data
 # %%
-%load_ext autoreload
-%autoreload 2
 import sys
 import numpy as np
-sys.path.append("../assignments")
-from utils import *
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-import seaborn as sns
-from utils import plot_decision_regions
-import matplotlib.pyplot as plt
+import pandas as pd
 
-# Load the penguin dataset
-penguins = sns.load_dataset("penguins")
+# %% TODO: Load titanic dataset with explicit data typing
+# Check out the data dictory of the dataset at https://www.kaggle.com/c/titanic/data
 
-# Drop the rows with missing values
-penguins = penguins.dropna()
+# Define the data types for each column
+data_types = {
+    "PassengerId": "int64",
+    "Survived": "int64",
+    "Pclass": "str",
+    "Name": "str",
+    "Sex": ...,
+    "Age": ...,
+    "SibSp": ...,
+    "Parch": ...,
+    "Ticket": ...,
+    "Fare": ...,
+    "Cabin": ...,
+    "Embarked": ...,
+}
 
-penguins.describe()
+# Load the data
+data_table = pd.read_csv("../data/train.csv", dtype=data_types)
 # %%
-# We will use the bill length and depth as features
-# and the species as the target variable
-X = penguins[["bill_length_mm", "bill_depth_mm"]].values
-y = penguins["species"].values
-# %% TODO: Split the data into training and testing sets. Use the following parameters:
-# - test_size=0.2
-# - random_state=42
-# - stratify=y
-# Use the train_test_split function from the scikit-learn library
-X_train, X_test, y_train, y_test = ...
 
-# TODO: Fit the logistic regression model using scikit-learn using the following parameters:
-# - penalty=None # The penalty term is used to prevent overfitting. The "none" means no penalty term
-# - solver = "saga" # The solver for weight optimization. "sag" refers to Stochastic Average Gradient descent
-# - multi_class="ovr"  # The "ovr" stands for One-vs-Rest, which means that in the case of multi-class classification, a separate model is trained for each class predicted against all other classes
-# - random_state=42  # The seed used by the random number generator for shuffling the data
-# Use the LogisticRegression class from the scikit-learn library
-lr = ...
+# Check the number of missing data
+missing_data = data_table.isnull().sum()
+print(missing_data)
 
-lr.fit(...)
+# %% TODO: Impute the missing data with the most common value for each column
 
-# %% Plot the decision regions of the trained Logistic Regression classifier
-X_combined = np.vstack([X_train, X_test])
-y_combined = np.hstack((y_train, y_test))
-test_idx = range(len(y_train), len(y_train) + len(y_test))
-plot_decision_regions(
-    X_combined,  # The combined feature matrix of training and testing sets
-    y_combined,  # The combined target variable of training and testing sets
-    classifier=lr,  # The trained Logistic Regression classifier
-    test_idx=test_idx  # The indices of the test set examples
-)
-plt.xlabel('Bill Length (mm)')
-plt.ylabel('Bill Depth (mm)')
-plt.title('Logistic Regression Decision Regions')
+# %% Check the number of missing data
+missing_data = data_table.isnull().sum()
+print(missing_data)
 
-# %% TODO: Evaluate the performance by using accuracy as a metric. Do not use scikit-learn's accuracy_score function. Use numpy to calculate the accuracy.
-y_pred = lr.predict(...)
-acc = ...
-print("Accuracy: %f" % acc)
+# %% TODD: Convert the ordinal feature, 'Pclass', to numerical data
+pclass_mapping = {...}
+
+# %% TODO: Convert the nominal features ("Sex" and "Embarked") to numerical data using get_dummy API in pandas

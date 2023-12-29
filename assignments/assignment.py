@@ -2,228 +2,210 @@
 import numpy as np
 import pandas as pd
 from typing import Any, Self
+from sklearn.linear_model import LogisticRegression
 
 
-# TODO: Implement the LogisticRegression class
-class LogisticRegression:
-    """Perceptron classifier.
-
-    Parameters
-    ------------
-    eta : float
-      Learning rate (between 0.0 and 1.0)
-    n_iter : int
-      Passes over the training dataset.
-    random_state : int
-      Random number generator seed for random weight
-      initialization.
-
-    Attributes
-    -----------
-    w_ : 1d-array
-      Weights after fitting.
-    b_ : Scalar
-      Bias unit after fitting.
-    errors_ : list
-      Number of misclassifications (updates) in each epoch.
-
-    """
-
-    def __init__(self, eta: float = 0.01, n_iter: int = 50, random_state=1) -> None:
-        self.eta = eta
-        self.n_iter = n_iter
-        self.random_state = random_state
-        self._errors = []
-        self.w_ = None
-        self.b_ = None
-
-    def fit(self, X: np.ndarray, y: np.ndarray) -> Self:
-        """Fit training data.
-
-        Parameters
-        ----------
-        X : {array-like}, shape = [n_examples, n_features]
-          Training vectors, where n_examples is the number of examples and
-          n_features is the number of features.
-        y : array-like, shape = [n_examples]
-          Target values.
-
-        Returns
-        -------
-        self : object
-        """
-        pass
-
-    def predict(self, X: np.ndarray) -> np.ndarray:
-        """Predict class labels for samples in X.
-
-        Parameters
-        ----------
-        X : {array-like}, shape = [n_examples, n_features]
-          Samples.
-
-        Returns
-        -------
-        C : array, shape = [n_examples]
-            Predicted class label (1 or 0) per sample.
-
-        # TODO: Implement this function to predict class labels for samples in X.
-        # Use the weights and bias unit from the fitting process.
-        # You may find the predict_proba method useful.
-        """
-        pass
-
-    def predict_proba(self, X: np.ndarray) -> np.ndarray:
-        """
-        Predict class probabilities for samples in X.
-
-        Parameters
-        ----------
-        X : {array-like}, shape = [n_examples, n_features]
-            Samples.
-
-        Returns
-        -------
-        P : array, shape = [n_examples, 2]
-            The class probabilities of the input samples. The order of the classes corresponds to that in the attribute `classes_`.
-
-        # TODO: Implement this function to predict class probabilities for samples in X.
-        # Use the weights and bias unit from the fitting process.
-        # You will implement the sigmoid function
-        """
-        pass
-
-    def copy(self):
-        model = LogisticRegression(
-            eta=self.eta,
-            n_iter=self.n_iter,
-            random_state=self.random_state,
-        )
-        for attr in self.__dict__:
-            if isinstance(self.__dict__[attr], np.ndarray):
-                model.__dict__[attr] = self.__dict__[attr].copy()
-            else:
-                model.__dict__[attr] = self.__dict__[attr]
-        return model
-
-
-# TODO: Implement the logistic regression with L2 regularization
-class LogisticRegressionRidge(LogisticRegression):
-    """Perceptron classifier.
-
-    Parameters
-    ------------
-    eta : float
-      Learning rate (between 0.0 and 1.0)
-    n_iter : int
-      Passes over the training dataset.
-    gamma: float
-      Regularization parameter
-    random_state : int
-      Random number generator seed for random weight
-      initialization.
-
-    Attributes
-    -----------
-    w_ : 1d-array
-      Weights after fitting.
-    b_ : Scalar
-      Bias unit after fitting.
-    errors_ : list
-      Number of misclassifications (updates) in each epoch.
-
-    """
-
+class DataLoader:
     def __init__(
-        self, eta: float = 0.01, n_iter: int = 50, gamma: float = 0, random_state=1
-    ) -> None:
-        self.eta = eta
-        self.n_iter = n_iter
-        self.random_state = random_state
-        self.gamma = gamma
-        self._errors = []
-        self.w_ = None
-        self.b_ = None
-
-    def fit(self, X: np.ndarray, y: np.ndarray) -> Self:
-        """Fit training data.
+        self,
+        path: str,
+        dtypes: dict = None,
+        nominal: list = None,
+        ordinal: dict = None,
+        target: str = None,
+        drop: list = None,
+    ):
+        """
+        DataLoader constructor.
 
         Parameters
         ----------
-        X : {array-like}, shape = [n_examples, n_features]
-          Training vectors, where n_examples is the number of examples and
-          n_features is the number of features.
-        y : array-like, shape = [n_examples]
-          Target values.
+        path : str
+            The path to the data file.
+        dtypes : dict, optional
+            The data types for the data, by default None.
+        nominal : list, optional
+            The nominal columns, by default None.
+        ordinal : dict, optional
+            A dictionary where each key-value pair represents a column and its corresponding mapping from data values to numerical ordinal values, by default None.
+        target : str, optional
+            The target column, by default None.
+        drop : list, optional
+            The columns to drop, by default None.
+
+        # Usage example
+        ---------------
+        >> data_types = {
+            "PassengerId": "int64",
+            "Survived": "int64",
+            "Pclass": "str",
+            "Name": "str",
+            "Sex": "str",
+            "Age": "float64",
+            "SibSp": "int64",
+            "Parch": "int64",
+            "Ticket": "str",
+            "Fare": "float64",
+            "Cabin": "str",
+            "Embarked": "str",
+        }
+        >> nominal = ["Sex", "Embarked"]
+        >> ordinal = {"Pclass": {"1": 1, "2": 2, "3": 3}}
+        >> target = "Survived"
+        >> drop = ["Name", "Ticket", "Cabin"]
+        >> data_loader = DataLoader(
+            path="../data/train.csv",
+            dtypes=data_types,
+            nominal=nominal,
+            ordinal=ordinal,
+            target=target,
+            drop=drop,
+        )
+        # Load the data
+        >> X, y = data_loader.load()
+        """
+        self.path = path
+        self.dtypes = dtypes
+        self.nominal = nominal
+        self.ordinal = ordinal
+        self.target = target
+        self.drop = drop
+
+    def load(self) -> tuple:
+        """
+        Load data from path, preprocess it and return features and target.
 
         Returns
         -------
-        self : object
+        tuple
+            A tuple containing features and target.
         """
-        pass
+        data_table = pd.read_csv(self.path, dtypes=self.dtypes)
 
+        if data_table.isnull().values.any():
+            data_table = self._inpute_missing_values(self.data_table)
+        if self.nominal is not None:
+            data_table = self._encode_nominal(self.data_table)
+        if self.ordinal is not None:
+            data_table = self._encode_ordinal(self.data_table)
+        if self.drop is not None:
+            data_table = self._drop_columns(self.data_table)
 
-class OneVsRest:
-    """
-    OneVsRest class for multi-class classification.
-    This class uses the one-vs-rest (OvR) method for multi-class classification.
-    """
+        X = data_table.drop(columns=self.target)
+        y = data_table[self.target]
+        return X, y
 
-    def __init__(self, classifier: LogisticRegression, n_classes: int):
+    # TODO: Implement the function
+    def _inpute_missing_values(self, data_table: pd.DataFrame) -> pd.DataFrame:
         """
-        Initialize the OneVsRest class.
+        Inpute missing values by mode for each column.
 
         Parameters
         ----------
-        classifier : object
-            The classifier to be used for the one-vs-rest classification.
-            The classifier must have a .fit, .predict, .copy method.
-        n_classes : int
-            The number of classes in the target variable.
-        """
-        self.n_classes = n_classes
-        self.classifiers = []
-        for i in range(self.n_classes):
-            self.classifiers.append(classifier.copy())
-
-    def fit(self, X: np.ndarray, y: np.ndarray) -> Self:
-        """
-        Fit the model according to the given training data.
-
-        Parameters
-        ----------
-        X : {array-like}, shape = [n_examples, n_features]
-            Training vectors, where n_examples is the number of examples and
-            n_features is the number of features.
-        y : array-like, shape = [n_examples]
-            Target values.
-
-        # Hint
-        Step 1: Iterate over each class in a one-vs-rest manner.
-        Step 2: For each class, create a binary target vector where the current class is 1 and all others are 0.
-        Step 3: Use the classifier's .fit method to train the classifier on the training data and the binary target vector.
-        Step 4: Store the trained classifier for later use in prediction.
-        """
-        pass
-
-    def predict(self, X: np.ndarray) -> np.ndarray:
-        """
-        Predict class labels for samples in X.
-
-        Parameters
-        ----------
-        X : {array-like}, shape = [n_examples, n_features]
-            Samples.
+        data_table : pd.DataFrame
+            The data table.
 
         Returns
         -------
-        C : array, shape = [n_examples]
-            Predicted class label per sample.
-
-        # Hint
-        Step 1: Iterate over each classifier.
-        Step 2: Use the classifier's .predict_proba method to get the class probabilities.
-        Step 3: Store the class probabilities in a matrix.
-        Step 4: Return the class with the highest probability for each sample.
+        pd.DataFrame
+            The data table with missing values imputed.
         """
-        pass
+
+        for column in data_table.columns:
+            data_table[column].fillna(data_table[column].mode()[0], inplace=True)
+
+        return data_table
+
+    # TODO: Implement the function
+    def _encode_nominal(self, data_table: pd.DataFrame) -> pd.DataFrame:
+        """
+        Encode nominal columns by one-hot encoding.
+
+        Parameters
+        ----------
+        data_table : pd.DataFrame
+            The data table.
+
+        Returns
+        -------
+        pd.DataFrame
+            The data table with nominal columns encoded.
+        """
+
+        data_table = pd.get_dummies(data_table, columns=self.nominal, dtype=np.int64)
+
+        return data_table
+
+    # TODO: Implement the function
+    def _encode_ordinal(self, data_table: pd.DataFrame) -> pd.DataFrame:
+        """
+        Encode ordinal columns by mapping.
+
+        Parameters
+        ----------
+        data_table : pd.DataFrame
+            The data table.
+
+        Returns
+        -------
+        pd.DataFrame
+            The data table with ordinal columns encoded.
+        """
+
+        for column in self.ordinal:
+            data_table[column] = data_table[column].map(self.ordinal[column])
+
+        return data_table
+
+    # TODO: Implement the function
+    def _drop_columns(self, data_table: pd.DataFrame) -> pd.DataFrame:
+        """
+        Drop columns.
+
+        Parameters
+        ----------
+        data_table : pd.DataFrame
+            The data table.
+
+        Returns
+        -------
+        pd.DataFrame
+            The data table with specified columns dropped.
+        """
+        data_table = data_table.drop(columns=self.drop)
+        return data_table
+
+
+# TODO: Implement the function
+def classification_lasso_path(X, y, Cs):
+    """
+    Compute Lasso path with Logistic Regression.
+
+    Parameters
+    ----------
+    X : np.ndarray
+        The feature matrix.
+    y : np.ndarray
+        The target vector.
+    Cs : np.ndarray
+        The list of the inverse of regularization parameters.
+
+    Returns
+    -------
+    np.ndarray
+        2D array of shape (len(Cs), n_features) containing the Lasso path.
+        The order of rows corresponds to the order of Cs.
+
+
+    Instruction:
+    ------------
+    # Use the following configuration of the logistic regression
+    >> clf = LogisticRegression(penalty="l1", solver="liblinear", C=C, random_state=42)
+    """
+
+    coefs = []
+    for C in Cs:
+        clf = LogisticRegression(penalty="l1", solver="liblinear", C=C)
+        clf.fit(X, y)
+        coefs.append(clf.coef_.ravel().copy())
+    return np.array(coefs)

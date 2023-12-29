@@ -1,75 +1,50 @@
 # %%
 # In this expercise, you will:
-# 3. learn how to use the LogisticRegression class from the scikit-learn library.
-# 4. learn how to evaluate the performance of the model using different metrics.
-# 4. learn how to use the plot_decision_regions function from the utils.py module.
-# %%
-%load_ext autoreload
-%autoreload 2
+# 1. learn loading data with explicit Data typing
+# 2. learn how to deal with missing data
+# 3. learn how to deal with categorical data
 import sys
 import numpy as np
-sys.path.append("../../assignments")
-from utils import *
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-import seaborn as sns
-from utils import plot_decision_regions
-import matplotlib.pyplot as plt
+import pandas as pd
 
-# Load the penguin dataset
-penguins = sns.load_dataset("penguins")
+# TODO: Load titanic dataset with explicit data typing
+# Check out the data dictory of the dataset at https://www.kaggle.com/c/titanic/data
 
-# Drop the rows with missing values
-penguins = penguins.dropna()
+# Define the data types for each column
+data_types = {
+    "PassengerId": "int64",
+    "Survived": "int64",
+    "Pclass": "str",
+    "Name": "str",
+    "Sex": "str",
+    "Age": "float64",
+    "SibSp": "int64",
+    "Parch": "int64",
+    "Ticket": "str",
+    "Fare": "float64",
+    "Cabin": "str",
+    "Embarked": "str",
+}
 
-penguins.describe()
+# Load the data
+data_table = pd.read_csv("../data/train.csv", dtype=data_types)
 # %%
-# We will use the bill length and depth as features
-# and the species as the target variable
-X = penguins[["bill_length_mm", "bill_depth_mm"]].values
-y = penguins["species"].values
-# %% TODO: Split the data into training and testing sets. Use the following parameters:
-# - test_size=0.2
-# - random_state=42
-# - stratify=y
-X_train, X_test, y_train, y_test = train_test_split(
-    X,  # Feature matrix
-    y,  # Target variable
-    test_size=0.2,  # Proportion of the dataset to include in the test split
-    random_state=41,  # The seed used by the random number generator
-    stratify=y  # This stratify parameter makes a split so that the proportion of values in the sample produced will be the same as the proportion of values provided to parameter stratify
-)
 
-# TODO: Fit the logistic regression model using scikit-learn using the following parameters:
-# - penalty=None # The penalty term is used to prevent overfitting. The "none" means no penalty term
-# - solver = "sag" # The solver for weight optimization. "sag" refers to Stochastic Average Gradient descent
-# - multi_class="ovr"  # The "ovr" stands for One-vs-Rest, which means that in the case of multi-class classification, a separate model is trained for each class predicted against all other classes
-# - random_state=42  # The seed used by the random number generator for shuffling the data
-lr = LogisticRegression(
-    penalty = None, # The penalty term is used to prevent overfitting. The "none" means no penalty term
-    solver = "sag", # The solver for weight optimization. "sag" refers to Stochastic Average Gradient descent
-    multi_class="ovr",  # The "ovr" stands for One-vs-Rest, which means that in the case of multi-class classification, a separate model is trained for each class predicted against all other classes
-    random_state=42  # The seed used by the random number generator for shuffling the data
-)
-lr.fit(
-    X_train,  # The training data
-    y_train  # The target variable to try to predict in the case of supervised learning
-)
+# Check the number of missing data
+missing_data = data_table.isnull().sum()
+print(missing_data)
 
-# %% Plot the decision regions of the trained Logistic Regression classifier
-X_combined = np.vstack([X_train, X_test])
-y_combined = np.hstack((y_train, y_test))
-test_idx = range(len(y_train), len(y_train) + len(y_test))
-plot_decision_regions(
-    X_combined,  # The combined feature matrix of training and testing sets
-    y_combined,  # The combined target variable of training and testing sets
-    classifier=lr,  # The trained Logistic Regression classifier
-    test_idx=test_idx  # The indices of the test set examples
-)
-plt.xlabel('Bill Length (mm)')
-plt.ylabel('Bill Depth (mm)')
-plt.title('Logistic Regression Decision Regions')
+# %% TODO: Impute the missing data with the most common value for each column
+for column in data_table.columns:
+    data_table[column].fillna(data_table[column].mode()[0], inplace=True)
 
-# %% TODO: Evaluate the performance by using accuracy as a metric. Do not use scikit-learn's accuracy_score function. Use numpy to calculate the accuracy.
-y_pred = lr.predict(X_test)
-print("Accuracy: %f" % np.mean(y_pred == y_test))
+# %% Check the number of missing data
+missing_data = data_table.isnull().sum()
+print(missing_data)
+
+# %% TODD: Convert the ordinal feature, 'Pclass', to numerical data
+pclass_mapping = {"1": 0, "2": 1, "3": 2}
+data_table["Pclass"] = data_table["Pclass"].map(pclass_mapping)
+
+# %% TODO: Convert the nominal features ("Sex" and "Embarked") to numerical data
+data_table = pd.get_dummies(data_table, columns=["Embarked", "Sex"], dtype="int64")

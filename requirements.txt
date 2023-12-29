@@ -1,0 +1,11 @@
+numpy
+scipy
+pandas
+seaborn
+matplotlib
+ipykernel
+tqdm
+black
+nbconvert
+requests
+jupytext

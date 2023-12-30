@@ -80,20 +80,22 @@ class DataLoader:
         tuple
             A tuple containing features and target.
         """
-        data_table = pd.read_csv(self.path, dtypes=self.dtypes)
+        data_table = pd.read_csv(self.path, dtype=self.dtypes)
 
         if data_table.isnull().values.any():
-            data_table = self._inpute_missing_values(self.data_table)
+            data_table = self._inpute_missing_values(data_table)
         if self.nominal is not None:
-            data_table = self._encode_nominal(self.data_table)
+            data_table = self._encode_nominal(data_table)
         if self.ordinal is not None:
-            data_table = self._encode_ordinal(self.data_table)
+            data_table = self._encode_ordinal(data_table)
         if self.drop is not None:
-            data_table = self._drop_columns(self.data_table)
+            data_table = self._drop_columns(data_table)
 
-        X = data_table.drop(columns=self.target)
+        df = data_table.drop(columns=self.target)
+        X = df.values
+        feature_names = df.columns
         y = data_table[self.target]
-        return X, y
+        return X, y, feature_names
 
     # TODO: Implement the function
     def _inpute_missing_values(self, data_table: pd.DataFrame) -> pd.DataFrame:
@@ -110,11 +112,7 @@ class DataLoader:
         pd.DataFrame
             The data table with missing values imputed.
         """
-
-        for column in data_table.columns:
-            data_table[column].fillna(data_table[column].mode()[0], inplace=True)
-
-        return data_table
+        pass
 
     # TODO: Implement the function
     def _encode_nominal(self, data_table: pd.DataFrame) -> pd.DataFrame:
@@ -131,10 +129,7 @@ class DataLoader:
         pd.DataFrame
             The data table with nominal columns encoded.
         """
-
-        data_table = pd.get_dummies(data_table, columns=self.nominal, dtype=np.int64)
-
-        return data_table
+        pass
 
     # TODO: Implement the function
     def _encode_ordinal(self, data_table: pd.DataFrame) -> pd.DataFrame:
@@ -151,11 +146,7 @@ class DataLoader:
         pd.DataFrame
             The data table with ordinal columns encoded.
         """
-
-        for column in self.ordinal:
-            data_table[column] = data_table[column].map(self.ordinal[column])
-
-        return data_table
+        pass
 
     # TODO: Implement the function
     def _drop_columns(self, data_table: pd.DataFrame) -> pd.DataFrame:
@@ -172,8 +163,7 @@ class DataLoader:
         pd.DataFrame
             The data table with specified columns dropped.
         """
-        data_table = data_table.drop(columns=self.drop)
-        return data_table
+        pass
 
 
 # TODO: Implement the function
@@ -202,10 +192,4 @@ def classification_lasso_path(X, y, Cs):
     # Use the following configuration of the logistic regression
     >> clf = LogisticRegression(penalty="l1", solver="liblinear", C=C, random_state=42)
     """
-
-    coefs = []
-    for C in Cs:
-        clf = LogisticRegression(penalty="l1", solver="liblinear", C=C)
-        clf.fit(X, y)
-        coefs.append(clf.coef_.ravel().copy())
-    return np.array(coefs)
+    pass

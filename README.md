@@ -5,29 +5,22 @@ In this assignments, we will learn the basic of data preprocessing for machine l
 - Loading data with explicit Data typing
 - Dealing with missing data
 - Handing categorical data
-    - class labels
-    - ordinal data
-    - nominal data: one-hot encoding
 - Feature selection
-    - Lasso
-    - Sequential backward selection
 - Feature importance
-    - Regression coefficient
-    - SHAP
 
 
 # Task
 
 1. Do `exercise/excercise_0*.py` by following the instruction in the comment out. They are not grading items. So feel free to change as you wish.
 
-1. Implement the functions in `assignments/assignment.py`. This is the grading item.
+2. Implement the functions in `assignments/assignment.py`. This is the grading item.
 
-3. Git commit & Push Your edit.
+3. Generate a swarm plot illustrating the importance of features in the Titanic dataset using the `shap` library. Complete the task in `exercise_03.py` to create this figure. Submit the figure and a plain text file (maximum 300 words) interpreting the results on Brightspace.
+
+4. Git commit & Push Your edit.
 
 
 ### Instruction
-
-1. You can import `assignments/utils.py` and use their functions (if any)
 
 1. You can verify your implementation by using the exercise_0*.py scripts. If you prefer to work with Jupyter notebook, you can convert the Python script by jupytext. `jupytext --to notebook <name_of_script_file>.py`
 

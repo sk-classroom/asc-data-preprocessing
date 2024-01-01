@@ -27,7 +27,7 @@ data_types = {
 }
 
 # Load the data
-data_table = pd.read_csv("../data/train.csv", dtype=data_types)
+data_table = pd.read_csv("../../data/train.csv", dtype=data_types)
 # %%
 
 # Check the number of missing data
@@ -47,4 +47,6 @@ pclass_mapping = {"1": 0, "2": 1, "3": 2}
 data_table["Pclass"] = data_table["Pclass"].map(pclass_mapping)
 
 # %% TODO: Convert the nominal features ("Sex" and "Embarked") to numerical data
-data_table = pd.get_dummies(data_table, columns=["Embarked", "Sex"], dtype="int64")
+data_table = pd.get_dummies(
+    data_table, columns=["Embarked", "Sex"], dtype="int64", drop_first=True
+)

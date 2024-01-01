@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import sys
 import numpy as np
+
 sys.path.append("../assignments")
 from sklearn.linear_model import LogisticRegression
 
@@ -22,7 +23,11 @@ from answers.exercise_01 import *
 # 2. Define the features "X" as all columns from the data_table except "Survived", "Name", "Ticket", "Cabin".
 # 3. Create a LogisticRegression model with L1 penalty.
 # 4. Fit the model with the features and target variable.
-focal_features = [col for col in data_table.columns if col not in ["Survived", "Name", "Ticket", "Cabin"]]
+focal_features = [
+    col
+    for col in data_table.columns
+    if col not in ["Survived", "Name", "Ticket", "Cabin"]
+]
 
 y = data_table[...].values
 X = data_table[...].values

@@ -1,7 +1,7 @@
 # %%
 import numpy as np
 import pandas as pd
-from typing import Any, Self
+from typing import Any
 from sklearn.linear_model import LogisticRegression
 
 

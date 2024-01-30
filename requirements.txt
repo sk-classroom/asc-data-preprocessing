@@ -10,4 +10,4 @@ nbconvert
 requests
 jupytext
 shap
-sklearn
+scikit-learn

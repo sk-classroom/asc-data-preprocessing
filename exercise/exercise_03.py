@@ -12,7 +12,7 @@ import shap
 
 # %% Load the data:
 # This will import the data_table implemented in the previous exercise
-from answers.exercise_01 import *
+from base import *
 
 focal_features = [col for col in data_table.columns if col not in ["Survived", "Name", "Ticket", "Cabin"]]
 y = data_table["Survived"].values
